@@ -1,0 +1,63 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+imports:
+    - { resource: resources/ }
+
+parameters:
+    app.since_datetime_file: 'var/sinceDateTime'
+    app.since_id_file: 'var/sinceId'
+
+    crm.api_url: '%env(string:CRM_API_URL)%'
+    crm.api_key: '%env(string:CRM_API_KEY)%'
+
+    crm.custom_fields: '%env(string:CRM_CUSTOM_FIELDS)%'
+    crm.custom_fields_dirs: '%env(string:CRM_CUSTOM_FIELDS_DIRS)%'
+    crm.site: '%env(string:CRM_SITE_CODE)%'
+
+    crm.cancelled_status_code: '%env(string:CRM_CANCELLED_STATUS_CODE)%'
+
+    vtiger.api_url: 'https://leotarotcom.od2.vtiger.com/'
+    vtiger.api_username: '%env(string:VTIGER_USERNAME)%'
+    vtiger.api_access_key: '%env(string:VTIGER_ACCESS_KEY)%'
+
+    mapping.manager: '%env(string:MANAGER_MAPPING)%'
+    mapping.default_manager: '%env(string:DEFAULT_MANAGER)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    monolog.formatter.pretty:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            - "[%%datetime%%] %%channel%%.%%level_name%%: %%message%% %%context%% %%extra%%\n"
+            - "Y-m-d H:i:s"
+            - true
+            - true
+
+#    App\Service\Vtiger\Factory\Factory:
+#        class: 'App\Service\Vtiger\Factory\Factory'
+#        arguments:
+#            $httpClient: '@http_client_vtiger.guzzle'
+
+    App\Service\Simla\ApiWrapper:
+        class: 'App\Service\Simla\ApiWrapper'
+        arguments:
+            $httpClient: '@http_client_simla.guzzle'

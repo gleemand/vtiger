@@ -1,0 +1,12 @@
+services:
+    rate_limiter_simla.guzzle.middleware:
+        class: 'App\Guzzle\Middleware\RateLimiterMiddleware'
+        arguments:
+            $apiLimiter: '@limiter.crm_api'
+        tags: [ 'guzzle.middleware.simla' ]
+
+    rate_limiter_vtiger.guzzle.middleware:
+        class: 'App\Guzzle\Middleware\RateLimiterMiddleware'
+        arguments:
+            $apiLimiter: '@limiter.vtiger_api'
+        tags: [ 'guzzle.middleware.vtiger' ]
